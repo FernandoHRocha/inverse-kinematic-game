@@ -1,0 +1,29 @@
+{
+  "name": "inverse-kinematic-game",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"tsc -w\" \"vite --port 8000\"",
+    "build": "tsc && vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:FernandoHRocha/inverse-kinematic-game.git"
+  },
+  "author": "Fernando H. Rocha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FernandoHRocha/inverse-kinematic-game/issues"
+  },
+  "homepage": "https://github.com/FernandoHRocha/inverse-kinematic-game#readme",
+  "dependencies": {
+    "three": "^0.164.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.164.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10"
+  }
+}
