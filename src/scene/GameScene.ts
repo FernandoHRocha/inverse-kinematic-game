@@ -50,7 +50,7 @@ class GameScene {
 
     private setDefaultScene() {
         this._camera = new PerspectiveCamera(75, this._width/this._height, 0.1, 1000)
-        this._camera.position.set(0, 5, 50)
+        this._camera.position.set(0, 5, 600)
         this._camera.rotation.x = MathUtils.degToRad(0)
         this._camera.rotation.z = MathUtils.degToRad(0)
         
