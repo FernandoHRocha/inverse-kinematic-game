@@ -1,4 +1,4 @@
-import { BufferGeometry, DirectionalLight, GridHelper, Line, LineBasicMaterial, MathUtils, Matrix4, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, SphereGeometry, Vector3, WebGLRenderer } from "three"
+import { BoxGeometry, DirectionalLight, MathUtils, Mesh, MeshLambertMaterial, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import InverseKinematicMechanics from "./InverseKinematicMechanics"
 
@@ -50,7 +50,7 @@ class GameScene {
 
     private setDefaultScene() {
         this._camera = new PerspectiveCamera(75, this._width/this._height, 0.1, 1000)
-        this._camera.position.set(0, 5, 600)
+        this._camera.position.set(0, 5, 200)
         this._camera.rotation.x = MathUtils.degToRad(0)
         this._camera.rotation.z = MathUtils.degToRad(0)
         
@@ -60,17 +60,18 @@ class GameScene {
     public async load() {
         // let controls = new OrbitControls(this._camera, this._canvas)
 
-        const light = new DirectionalLight(0xFFFFFF, 6)
-        light.position.set(0, 3, -10)
+        const light = new DirectionalLight(0xFFFFFF, 1)
+        light.position.set(0, 3, 100)
+        light.lookAt(0,0,0)
         light.name = "luz"
-        light.castShadow = true
-        
-        this._scene.add(light)
+        light.castShadow = false
 
-        const helper = new GridHelper(200, 100)
-        helper.position.set(0,0,1)
-        helper.rotation.x = MathUtils.degToRad(90)
-        // this._scene.add(helper)
+        const pointlight = new PointLight(0xffffff, 50000, 1000)
+        pointlight.position.set(-20, 20, 100)
+        pointlight.castShadow = true
+        
+        this._scene.add(pointlight)
+        this._scene.add(light)
     }
 
     public render = () => {

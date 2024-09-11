@@ -1,4 +1,4 @@
-import { BufferGeometry, CircleGeometry, Group, Line, LineBasicMaterial, MathUtils, Matrix4, Mesh, MeshBasicMaterial, RingGeometry, SphereGeometry, Vector3 } from "three";
+import { Vector3 } from "three";
 
 export default class Segment {
 
@@ -6,33 +6,28 @@ export default class Segment {
         return this
     }
 
-    public targetElement;
-    public lineElement;
-    public circleElement;
-
-    public origin : Vector3 = new Vector3(0, 0, 0)
-    public target : Vector3 = new Vector3(1, 0.6, 0)
-    public group
+    private origin : Vector3 = new Vector3(0, 0, 10)
+    private target : Vector3 = new Vector3(0, 1, 0)
+    public segmentLength = 6
+    public width = 0
 
     public drawPoints = []
 
-    public constructor(public len: number = 8, child?: Segment) {
+    public constructor( nailSegments: number, index: number = 0, child?: Segment) {
+        const waveLength = 1
+        const waveWidth = 6
+        const amplitude = 2
+        const baseWidth = 1
+        const segmentWidth = (Math.abs(1 - Math.sin((index / waveLength))) * amplitude) + ((index <= nailSegments) ? ((baseWidth * waveWidth) * ( 1 - Math.exp(-index*index/(nailSegments+nailSegments)))) : (baseWidth * waveWidth))
+        
+        // Criação dos vetores origin e target de cada segmento, desloca a origin para a target do segmento anterior
         if(child) {
-            this.len = Math.cos((len)) + 0.3 * 50
+            this.width = segmentWidth
             this.origin = child.target
-            this.target = new Vector3().subVectors(child.target, child.origin).setLength(2)
+            this.target = new Vector3().subVectors(child.target, child.origin)
         }
-        this.target = this.target.setLength(2)
-        this.target.addVectors(this.origin, this.target)
-    }
 
-    public buildTarget() {
-        let geometry = new SphereGeometry( 1, 12, 12 ); 
-        let material = new MeshBasicMaterial( { color: 0xF93943 } ); 
-        let sphere = new Mesh( geometry, material )
-        sphere.position.set(this.target.x, this.target.y, this.target.z)
-        sphere['segment'] = this
-        sphere.name = 'target'
-        this.targetElement = sphere
+        this.target = this.target.setLength(this.segmentLength)
+        this.target.addVectors(this.origin, this.target)
     }
 }
