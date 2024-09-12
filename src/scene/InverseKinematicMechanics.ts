@@ -9,10 +9,6 @@ class InverseKinematicMechanics {
     private _gameScene: GameScene
     private _movingPlane: Object3D
     private _arm : InverseKinematicArm
-    private _armGeometry
-
-    public _lines: any = []
-    public _targets: any = []
 
     public constructor(gameScene: GameScene) {
         this._gameScene = gameScene
@@ -24,10 +20,6 @@ class InverseKinematicMechanics {
     }
     
     public loadObjects() {
-        
-        this._lines = []
-        this._targets = []
-        
         const movingPlane = new PlaneGeometry(1900,1000)
         const movingPlaneMaterial = new MeshLambertMaterial({color: 0x7EB2DD})
         const movingPlaneMesh = new Mesh(movingPlane, movingPlaneMaterial)
@@ -36,14 +28,7 @@ class InverseKinematicMechanics {
         this._gameScene._scene.add(movingPlaneMesh)
         this._movingPlane = movingPlaneMesh
 
-        this._arm = new InverseKinematicArm(40)
-
-        this._arm.segments.forEach(segment => {
-            if(segment.targetElement) {
-                this._gameScene._scene.add(segment.targetElement)
-                this._targets.push(segment.targetElement)
-            }
-        })
+        this._arm = new InverseKinematicArm(9)
         this.buildBody()
     }
 
@@ -86,31 +71,27 @@ class InverseKinematicMechanics {
         const axis = new Vector3(0,0,1);
 
         // Cria os vertores para serem vértices do lado esquerdo do corpo
-        this._arm.segments.forEach((segment, index) => {
-            let originDir = new Vector3().subVectors(segment.target, segment.origin).setLength(segment.width)
-
-            let crossDir = new Vector3().copy(originDir).applyAxisAngle(axis, MathUtils.degToRad(90))
-
-            points.push(new Vector3().addVectors(crossDir, segment.target))
-        });
+        for (let index = this._arm.segments.length - 1; index >= 0; index--) {
+            const segment = this._arm.segments[index]
+            let originDirection = segment.originDirection().setLength(segment.width)
+            let crossDir = originDirection.applyAxisAngle(axis, MathUtils.degToRad(90))
+            points.push(crossDir.add(segment.headPoint))
+        }
 
         // Separa o último segmento para criar os vetores dos vértices da cabeça
-        const segTemp = this._arm.segments[this._arm.segments.length - 1]
+        const headSegment = this._arm.segments[0]
         for(let index = 75; index >= -75; index -= 15) {
-            let originDir = new Vector3().subVectors(segTemp.target, segTemp.origin).setLength(segTemp.width)
-            let crossDir = new Vector3().copy(originDir).applyAxisAngle(axis, MathUtils.degToRad(index))
-            points.push(new Vector3().addVectors(crossDir, segTemp.target))
+            let originDirection = headSegment.originDirection().setLength(headSegment.width)
+            let crossDir = originDirection.applyAxisAngle(axis, MathUtils.degToRad(index))
+            points.push(new Vector3().addVectors(crossDir, headSegment.headPoint))
         }
 
         // Cria os vetores para serem vértices do lado direito
-        for (let index = this._arm.segments.length - 1; index >= 0; index--) {
-            const segment = this._arm.segments[index]
-            let originDir = new Vector3().subVectors(segment.target, segment.origin).setLength(segment.width)
-
-            let crossDir = new Vector3().copy(originDir).applyAxisAngle(axis, MathUtils.degToRad(-90))
-
-            points.push(new Vector3().addVectors(crossDir, segment.target))
-        }
+        this._arm.segments.forEach(segment => {
+            let originDirection = segment.originDirection().setLength(segment.width)
+            let crossDir = originDirection.applyAxisAngle(axis, MathUtils.degToRad(-90))
+            points.push(crossDir.add(segment.headPoint))
+        })
 
         // Cria a associação de pontos ordenados para criar as faces
         let faces = []

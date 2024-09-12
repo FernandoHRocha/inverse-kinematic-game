@@ -1,4 +1,4 @@
-import { BoxGeometry, DirectionalLight, MathUtils, Mesh, MeshLambertMaterial, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from "three"
+import { BoxGeometry, DirectionalLight, Mesh, MeshStandardMaterial, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import InverseKinematicMechanics from "./InverseKinematicMechanics"
 
@@ -50,9 +50,8 @@ class GameScene {
 
     private setDefaultScene() {
         this._camera = new PerspectiveCamera(75, this._width/this._height, 0.1, 1000)
-        this._camera.position.set(0, 5, 200)
-        this._camera.rotation.x = MathUtils.degToRad(0)
-        this._camera.rotation.z = MathUtils.degToRad(0)
+        this._camera.position.set(0, 0, 200)
+        this._camera.lookAt(0,0,0)
         
         this._scene = new Scene()
     }
@@ -72,6 +71,12 @@ class GameScene {
         
         this._scene.add(pointlight)
         this._scene.add(light)
+
+        const boxgeo = new BoxGeometry(1,1,20,1,1,1)
+        const boxmat = new MeshStandardMaterial({color: 0xFF0000})
+        const boxmesh = new Mesh(boxgeo, boxmat)
+        this._scene.add(boxmesh)
+        boxmesh.position.set(0,0,0)
     }
 
     public render = () => {

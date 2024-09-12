@@ -4,56 +4,45 @@ import Segment from "./Segment";
 export default class InverseKinematicArm {
 
     public segments = []
-    private _nailSegmentCount = 6
+    private _tailSegmentCount = 6
     private maxSegmentAngle = 30
 
     public constructor(segmentCount: number) {
-        let segment = new Segment(this._nailSegmentCount)
+        let segment = new Segment(this._tailSegmentCount)
 
         // Criação dos primeiros segmentos, começando pelo rabo
-        for (let index = 0; index < this._nailSegmentCount; index++)
+        for (let index = 0; index < this._tailSegmentCount; index++)
         {
-            segment = new Segment(this._nailSegmentCount, index, this.segments[index-1] ?? null)
+            segment = new Segment(this._tailSegmentCount, segmentCount + this._tailSegmentCount, index, this.segments[index-1] ?? null)
             this.segments.push(segment)
         }
 
         // Criação dos demais segmentos do corpo
         for (let index = 0; index < segmentCount; index++) {
-            segment = new Segment(this._nailSegmentCount, index + this._nailSegmentCount, this.segments[this._nailSegmentCount + (index-1)] ?? null)
+            segment = new Segment(this._tailSegmentCount, segmentCount + this._tailSegmentCount, index + this._tailSegmentCount, this.segments[this._tailSegmentCount + (index-1)] ?? null)
             this.segments.push(segment)
         }
     }
 
     public follow(followTarget: Vector3) {
 
-        for(let index = this.segments.length - 1; index >= 0; index--) {
-            let segment = this.segments[index]
+        this.segments.forEach(segment => {
 
-            segment.target = followTarget
-            let originDir = new Vector3().subVectors(followTarget, segment.origin).setLength(segment.segmentLength)
-            segment.origin = new Vector3().subVectors(followTarget, originDir)
+            segment.headPoint = followTarget
+            let originDir = segment.originDirection().setLength(segment.segmentLength)
+            segment.tailPoint = new Vector3().subVectors(followTarget, originDir)
+            let targetDirection = segment.targetDirection()
+            const angle = MathUtils.radToDeg(originDir.angleTo(targetDirection))
 
-            if(index < this.segments.length - 1) {
+             if(angle > this.maxSegmentAngle) {
+                let rotationAxis = new Vector3().crossVectors(originDir, targetDirection).normalize();
+                let rotationMatrix = new Matrix4().makeRotationAxis(rotationAxis, MathUtils.degToRad(10));
+                originDir.applyMatrix4(rotationMatrix).normalize().setLength(segment.segmentLength);
+                let newOrigin = new Vector3().subVectors(segment.headPoint, originDir)
+                segment.tailPoint = newOrigin
+             }
 
-                let targetDir = new Vector3().subVectors(this.segments[index + 1].target, followTarget).setLength(segment.segmentLength)
-                const angle = MathUtils.radToDeg(originDir.angleTo(targetDir))
-
-                 if(angle > this.maxSegmentAngle) {
-                    let rotationAxis = new Vector3().crossVectors(originDir, targetDir).normalize();
-                    let rotationMatrix = new Matrix4().makeRotationAxis(rotationAxis, MathUtils.degToRad(10));
-                    originDir.applyMatrix4(rotationMatrix).normalize().setLength(segment.width);
-
-                    let newOrigin = new Vector3().subVectors(segment.target, originDir)
-
-                    segment.origin = newOrigin
-                 }
-            }
-
-            if(segment.targetElement) {
-                segment.targetElement.position.set(followTarget.x, followTarget.y, followTarget.z)
-            }
-
-            followTarget = segment.origin
-        }
+            followTarget = segment.tailPoint
+        })
     }
 }
