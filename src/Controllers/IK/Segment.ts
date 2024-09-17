@@ -6,22 +6,23 @@ export default class Segment {
         return this
     }
 
-    private headPoint : Vector3 = new Vector3(0, 100, 10)
-    private tailPoint : Vector3 = new Vector3(0, -1, 0)
+    public headPoint : Vector3 = new Vector3(0, 0, 10)
+    public tailPoint : Vector3 = new Vector3(0, -1, 0)
     public segmentLength = 12
     public width = 0
 
     public drawPoints = []
 
     public constructor( tailSegments: number, lastIndex: number = 0, index: number = 0, public child?: Segment) {
-        const waveLength = 1
+        const waveLength = 1.4
         const waveWidth = 6
         const amplitude = 2
-        const baseWidth = 2
+        const baseWidth = 0.7
         const waveOffset = 4
         const tailIndex = lastIndex - index - 1
-        this.width = (Math.abs(1 - Math.cos((index + waveOffset/ waveLength))) * amplitude) + ((tailIndex <= tailSegments) ? ((baseWidth * waveWidth) * ( 1 - Math.exp(-tailIndex*tailIndex/(tailSegments+tailSegments)))) : (baseWidth * waveWidth))
-        console.log(index, (Math.abs(1 - Math.cos((index + waveOffset/ waveLength))) * amplitude), (baseWidth * waveWidth), (tailIndex <= tailSegments) ? ( 1 - Math.exp(-tailIndex*tailIndex/(tailSegments+tailSegments))) : 'a', this.width)
+        const widthBaseFunction = (Math.abs(1 - Math.cos(((index + waveOffset) / waveLength)))) * amplitude + (baseWidth * waveWidth)
+        const widthMultiplier = (tailIndex <= tailSegments) ? (1 - Math.exp(-tailIndex*tailIndex/(tailSegments-2))) : 1
+        this.width = widthBaseFunction * widthMultiplier
         
         // Criação dos vetores origin e target de cada segmento, desloca a origin para a target do segmento anterior
         if(child) {

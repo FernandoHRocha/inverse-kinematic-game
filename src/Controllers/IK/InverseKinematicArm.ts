@@ -3,8 +3,9 @@ import Segment from "./Segment";
 
 export default class InverseKinematicArm {
 
+    public mesh
     public segments = []
-    private _tailSegmentCount = 6
+    private _tailSegmentCount = 4
     private maxSegmentAngle = 30
 
     public constructor(segmentCount: number) {
@@ -22,6 +23,10 @@ export default class InverseKinematicArm {
             segment = new Segment(this._tailSegmentCount, segmentCount + this._tailSegmentCount, index + this._tailSegmentCount, this.segments[this._tailSegmentCount + (index-1)] ?? null)
             this.segments.push(segment)
         }
+    }
+
+    public getTarget(): Vector3 {
+        return this.segments[0].headPoint
     }
 
     public follow(followTarget: Vector3) {
