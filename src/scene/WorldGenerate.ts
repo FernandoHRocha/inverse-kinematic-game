@@ -12,6 +12,7 @@ class WorldGenerate {
     private buildWorld() {
         this.scene = window['scene'] as Scene
         this.worldGroup = new Group()
+        this.worldGroup.name = 'world'
         this.instantiateStem()
 
 
@@ -59,31 +60,31 @@ class WorldGenerate {
         let stemMesh = new Mesh(stemGeo, stemMaterial)
         stemMesh.castShadow = true
         stemMesh.receiveShadow = true
-        stemMesh.position.set(30,150,5)
+        stemMesh.position.set(30,280,4)
         this.worldGroup.add(stemMesh)
 
         let box3 = new Box3(new Vector3(), new Vector3()).setFromObject(stemMesh)
 
-        const helper = new Box3Helper(box3, 0xff0000)
+        // const helper = new Box3Helper(box3, 0xff0000)
 
-        this.scene.add(helper)
+        // this.scene.add(helper)
 
         stemMesh = new Mesh(stemGeo, stemMaterial)
         stemMesh.castShadow = true
         stemMesh.receiveShadow = true
-        stemMesh.position.set(-60,350,5)
+        stemMesh.position.set(-60,350,4)
         this.worldGroup.add(stemMesh)
 
         stemMesh = new Mesh(stemGeo, stemMaterial)
         stemMesh.castShadow = true
         stemMesh.receiveShadow = true
-        stemMesh.position.set(-70,400,5)
+        stemMesh.position.set(-20,400,4)
         this.worldGroup.add(stemMesh)
 
         stemMesh = new Mesh(stemGeo, stemMaterial)
         stemMesh.castShadow = true
         stemMesh.receiveShadow = true
-        stemMesh.position.set(30,470,5)
+        stemMesh.position.set(30,470,4)
         this.worldGroup.add(stemMesh)
     }
 }

@@ -28,10 +28,13 @@ class GameScene {
     private _renderResolution: Vector2
     private _composer: EffectComposer
 
-    private _pixelate: boolean = false
+    private _pixelate: boolean = true
     
     private _player: Player
     private _group: Group
+
+    private _thresholdY = 626
+    private _currentThresholdY = this._thresholdY
 
     public constructor() {
         this._canvas = document.getElementById('gameCanvas') as HTMLElement
@@ -50,7 +53,7 @@ class GameScene {
         addEventListener("resize", this.setRendererSize)
         this._inverseKinematicMechanics = new InverseKinematicMechanics(this)
         this._player = new Player(this._inverseKinematicMechanics)
-        this.buildGui()
+        // this.buildGui()
     }
 
     private buildGui() {
@@ -96,7 +99,7 @@ class GameScene {
         const world = new WorldGenerate()
         this._scene.add(world.worldGroup)
 
-        const light = new AmbientLight(0xFFFFFF, 1)
+        const light = new AmbientLight(0xFFFFFF, 2)
         light.castShadow = false
         this._group.add(light)
 
@@ -122,6 +125,11 @@ class GameScene {
     }
 
     public render = () => {
+        if (this._player?.playerHead?.headPoint.y > this._currentThresholdY) {
+            let world = this._scene.getObjectByName('world') as Group
+            world.position.y += this._thresholdY
+            this._currentThresholdY += this._thresholdY
+        }
         this._group.position.add(this._player._runningDirection)
         requestAnimationFrame(this.render)
         if(this._pixelate) {

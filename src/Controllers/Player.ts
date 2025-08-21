@@ -7,14 +7,14 @@ class Player {
 
     private scene: Scene
     private _player: InverseKinematicMechanics
-    private _playerTarget: Vector3 = new Vector3(0, 100, 10)
+    private _playerTarget: Vector3 = new Vector3(0, 100, 20)
 
-    private _upDirection = 50
+    private _upDirection = 13
     private _rightDirection = new Vector3(1, 0, 0)
     private _downDirection = -10
     private _leftDirection = new Vector3(-1, 0, 0)
 
-    public _runningDirection = new Vector3(0,0,0)
+    public _runningDirection = new Vector3(0,0.3,0)
 
     private _moveUp: boolean = false
     private _moveRight: boolean = false
@@ -22,7 +22,7 @@ class Player {
     private _moveLeft: boolean = false
 
     private headBox = new Box3(new Vector3(), new Vector3())
-    private playerHead: Segment
+    public playerHead: Segment
     private headSize = new Vector3(15,15,5)
 
     private waterSplashTimeout = null
@@ -41,9 +41,8 @@ class Player {
     private setupPlayer = () => {
         this.headBox.setFromObject(this._player.arm.mesh)
 
-        const helper = new Box3Helper(this.headBox, 0xff0000)
-
-        this.scene.add(helper)
+        // const helper = new Box3Helper(this.headBox, 0xff0000)
+        // this.scene.add(helper)
     }
 
     private onMove = (event: KeyboardEvent) => {
@@ -118,7 +117,7 @@ class Player {
             this._playerTarget.z = (this._upDirection)
 
         if(!this._moveUp && !this._moveDown)
-        this._playerTarget.z = 10
+        this._playerTarget.z = 3
 
         if (this._moveLeft)
             this._playerTarget.add(this._leftDirection)
@@ -130,6 +129,11 @@ class Player {
         this.observeWaterEntry()
 
         requestAnimationFrame(this.update)
+    }
+
+    public resetPosition() {
+        this._playerTarget.y = 100
+        this._player.arm.mesh.position.y = 100
     }
 }
 

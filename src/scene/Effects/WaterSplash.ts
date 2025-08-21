@@ -39,7 +39,7 @@ class WaterSplash {
         this.mesh.geometry.scale(this.scaleFactor, this.scaleFactor, 1)
 
         this.opacity = this.opacityFactor * this.opacity
-        this.mesh.material.opacity = this.opacity
+        this.mesh.material['opacity'] = this.opacity
         this.animationId = requestAnimationFrame(this.update)
     }
 
@@ -47,7 +47,15 @@ class WaterSplash {
         cancelAnimationFrame(this.animationId)
         this.scene.remove(this.mesh);
         this.mesh.geometry.dispose();
-        this.mesh.material.dispose();
+        if (Array.isArray(this.mesh.material)) {
+            this.mesh.material.forEach(mat => {
+                if (typeof mat.dispose === "function") {
+                    mat.dispose();
+                }
+            });
+        } else if (typeof this.mesh.material.dispose === "function") {
+            this.mesh.material.dispose();
+        }
     }
 }
 

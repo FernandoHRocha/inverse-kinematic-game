@@ -5,8 +5,8 @@ export default class InverseKinematicArm {
 
     public mesh
     public segments = []
-    private _tailSegmentCount = 4
-    private maxSegmentAngle = 30
+    private _tailSegmentCount = 11
+    private maxSegmentAngle = 60
 
     public constructor(segmentCount: number) {
         let segment = new Segment(this._tailSegmentCount)
